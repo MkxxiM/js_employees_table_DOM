@@ -118,6 +118,20 @@ function addInput(index) {
   input.setAttribute('type', 'text');
   input.required = true;
 
+  if (input.dataset.qa === 'name') {
+    input.setAttribute('minlength', '4');
+  }
+
+  if (input.dataset.qa === 'age') {
+    input.setAttribute('type', 'number');
+    input.setAttribute('min', '18');
+    input.setAttribute('max', '90');
+  }
+
+  if (input.dataset.qa === 'salary') {
+    input.setAttribute('type', 'number');
+  }
+
   return input;
 }
 
@@ -159,7 +173,13 @@ button.addEventListener('click', (e) => {
   for (let i = 0; i < form.length - 1; i++) {
     const cell = document.createElement('td');
 
-    cell.textContent = form[i].value;
+    if (i === form.length - 2) {
+      const salary = Number(form[i].value);
+
+      cell.textContent = `$${salary.toLocaleString('en-US')}`;
+    } else {
+      cell.textContent = form[i].value;
+    }
     newRow.appendChild(cell);
   }
 
