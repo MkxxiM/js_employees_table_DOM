@@ -3,14 +3,19 @@
 
 const headers = document.querySelectorAll('thead th');
 const tbody = document.querySelector('tbody');
-const trows = [...tbody.querySelectorAll('tr')];
 
 // Table sorting implementation
 
 let clickCounter = 0;
+let currentHeader = null;
 
 headers.forEach((header, index) => {
   header.addEventListener('click', () => {
+    if (currentHeader !== header) {
+      clickCounter = 0;
+      currentHeader = header;
+    }
+
     clickCounter++;
 
     if (clickCounter % 2 !== 0) {
@@ -63,18 +68,19 @@ function DESCsort(table, index) {
 // End region
 
 // Table row selection
-let active = false;
 
-trows.forEach((row) => {
-  row.addEventListener('click', () => {
-    active = !active;
+tbody.addEventListener('click', (e) => {
+  const row = e.target.closest('tr');
 
-    if (active) {
-      row.classList.add('active');
-    } else {
-      row.classList.remove('active');
-    }
+  if (!row) {
+    return null;
+  }
+
+  tbody.querySelectorAll('tr.active').forEach((activeRow) => {
+    activeRow.classList.remove('active');
   });
+
+  row.classList.add('active');
 });
 // End of region
 
@@ -139,19 +145,23 @@ function addSelect() {
   const select = document.createElement('select');
 
   select.name = 'office';
+  select.dataset.qa = 'office';
   select.required = true;
 
-  const cityOfficeSet = new Set();
+  const cityOfficeSet = {
+    0: 'Tokyo',
+    1: 'Singapore',
+    2: 'London',
+    3: 'New York',
+    4: 'Edinburgh',
+    5: 'San Francisco',
+  };
 
-  for (const row of trows) {
-    cityOfficeSet.add(row.cells[2].textContent);
-  }
-
-  for (const office of cityOfficeSet) {
+  for (const office in cityOfficeSet) {
     const option = document.createElement('option');
 
-    option.setAttribute('value', office);
-    option.textContent = `${office}`;
+    option.setAttribute('value', cityOfficeSet[office]);
+    option.textContent = `${cityOfficeSet[office]}`;
 
     select.appendChild(option);
   }
@@ -183,13 +193,28 @@ button.addEventListener('click', (e) => {
     newRow.appendChild(cell);
   }
 
-  if (form.checkValidity()) {
+  if (validation()) {
     tbody.appendChild(newRow);
     notification('success');
   } else {
     notification('error');
   }
 });
+
+function validation() {
+  const nameInput = form.elements.namedItem('name');
+  const ageInput = form.elements.namedItem('age');
+
+  if (nameInput.value.length <= 4) {
+    return notification('warning');
+  }
+
+  if (ageInput < 18 || ageInput > 90) {
+    return notification('warning');
+  }
+
+  return true;
+}
 
 function notification(type) {
   const message = document.createElement('div');
