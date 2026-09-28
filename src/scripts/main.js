@@ -205,12 +205,12 @@ function validation() {
   const nameInput = form.elements.namedItem('name');
   const ageInput = form.elements.namedItem('age');
 
-  if (nameInput.value.length <= 4) {
-    return notification('warning');
+  if (nameInput.value.length < 4) {
+    return false;
   }
 
-  if (ageInput < 18 || ageInput > 90) {
-    return notification('warning');
+  if (Number(ageInput.value) < 18 || Number(ageInput.value) > 90) {
+    return false;
   }
 
   return true;
